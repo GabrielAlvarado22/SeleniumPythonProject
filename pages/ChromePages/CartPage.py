@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.ChromePages.BasePage import BasePage
 
@@ -15,5 +14,5 @@ class CartPage(BasePage):
     # ==== METHODS ====
     def isCartEmpty(self):
         """Return True if the cart is empty, False if it has items"""
-        items = self.find_elements(self.cartItem, timeout=1)
+        items = self.find_elements(self.cartItem)
         return len(items) == 0

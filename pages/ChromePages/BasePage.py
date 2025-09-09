@@ -47,11 +47,11 @@ class BasePage:
         """Verify if the element is visible"""
         return self.find(by_locator).is_displayed()
 
-    def find_elements(self, by_locator, timeout=5):
+    def find_elements(self, by_locator):
         """
         Return a list of elements found by the locator
         Wait until at least one element is present or timeout occurs
         Uses WaitUtils for consistent waiting logic
         """
-        return self.wait_utils.wait_for_elements_present(by_locator, timeout)
+        return self.wait_utils.wait_for_elements_present(by_locator)
 

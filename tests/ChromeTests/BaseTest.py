@@ -7,18 +7,18 @@ class BaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # Set up the WebDriver, configure Chrome, open the site, and perform login
         cls.driver = webdriver.Chrome(options=cls._get_chrome_options())
-
         cls.driver.maximize_window()
         cls.driver.get("https://www.saucedemo.com/")
-
         cls.login_page = LoginPage(cls.driver)
 
-        # Perform login from json
+        # Perform login using a standard user from JSON
         cls.login_as("standard_user")
 
     @classmethod
     def _get_chrome_options(cls):
+        # Return Chrome options to configure browser behavior and disable automation alerts
         options = webdriver.ChromeOptions()
         prefs = {
             "credentials_enable_service": False,
@@ -40,11 +40,13 @@ class BaseTest(unittest.TestCase):
 
     @classmethod
     def login_as(cls, user_type):
+        # Log in as a specified user type using credentials from JSON
         users = load_users()
         user = users[user_type]
         cls.login_page.login(user["username"], user["password"])
 
     @classmethod
     def tearDownClass(cls):
+        # Close the WebDriver after all tests are finished
         if hasattr(cls, "driver"):
             cls.driver.quit()
