@@ -9,29 +9,15 @@ from tests.ChromeTests.BaseTest import BaseTest
 
 
 class CartTest(BaseTest):
-    def setUp(self):
-        super().setUp()
-        self.wait = WebDriverWait(self.driver, 10)
 
-    def tearDown(self):
-        self.driver.quit()
+    def setUp(self):
+        self.homePage = HomePage(self.driver)
+        self.cartPage = CartPage(self.driver)
 
     def test_cartIsEmptyInitially(self):
-        loginPage = LoginPage(self.driver)
-        loginPage.load()
-        loginPage.login("standard_user", "secret_sauce")
-
-        cartPage = CartPage(self.driver)
-        self.assertTrue(cartPage.isCartEmpty(), "The Cart is not empty")
+        self.assertTrue(self.cartPage.isCartEmpty(), "The Cart is not empty")
 
     def test_addItemAndCheckCart(self):
-        loginPage = LoginPage(self.driver)
-        loginPage.load()
-        loginPage.login("standard_user", "secret_sauce")
-
-        homePage = HomePage(self.driver)
-        homePage.addItemToCart()
-        homePage.goToCart()
-
-        cartPage = CartPage(self.driver)
-        self.assertFalse(cartPage.isCartEmpty(), "The Cart is still empty after adding an item")
+        self.homePage.addItemToCart()
+        self.homePage.goToCart()
+        self.assertFalse(self.cartPage.isCartEmpty(), "The Cart is still empty after adding an item")

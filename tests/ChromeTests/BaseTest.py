@@ -1,36 +1,50 @@
 import unittest
 from selenium import webdriver
-
 from pages.ChromePages.LoginPage import LoginPage
+from utils.user_loader import load_users
 
 class BaseTest(unittest.TestCase):
-    def setUp(self):
-        chrome_options = webdriver.ChromeOptions()
 
+    @classmethod
+    def setUpClass(cls):
+        cls.driver = webdriver.Chrome(options=cls._get_chrome_options())
+
+        cls.driver.maximize_window()
+        cls.driver.get("https://www.saucedemo.com/")
+
+        cls.login_page = LoginPage(cls.driver)
+
+        # Perform login from json
+        cls.login_as("standard_user")
+
+    @classmethod
+    def _get_chrome_options(cls):
+        options = webdriver.ChromeOptions()
         prefs = {
             "credentials_enable_service": False,
             "profile.password_manager_enabled": False,
             "profile.default_content_setting_values.notifications": 2,
         }
-
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-password-manager-reauthentication")
-        chrome_options.add_argument("--disable-save-password-bubble")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-notifications")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument(
+        options.add_experimental_option("prefs", prefs)
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-infobars")
+        options.add_argument("--disable-password-manager-reauthentication")
+        options.add_argument("--disable-save-password-bubble")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-notifications")
+        options.add_argument("--disable-extensions")
+        options.add_argument(
             "--disable-features=IsolateOrigins,site-per-process,PasswordLeakDetection,SafeBrowsing")
-        chrome_options.add_argument("--incognito")
-        chrome_options.add_experimental_option("prefs", prefs)
+        options.add_argument("--incognito")
+        return options
 
-        self.driver = webdriver.Chrome(options=chrome_options)
-        self.driver.maximize_window()
-        self.driver.get("https://www.saucedemo.com/")
+    @classmethod
+    def login_as(cls, user_type):
+        users = load_users()
+        user = users[user_type]
+        cls.login_page.login(user["username"], user["password"])
 
-        self.login_page = LoginPage(self.driver)
-        self.login_page.login("standard_user", "secret_sauce")
-
-    def tearDown(self):
-        self.driver.quit()
+    @classmethod
+    def tearDownClass(cls):
+        if hasattr(cls, "driver"):
+            cls.driver.quit()
